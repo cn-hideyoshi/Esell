@@ -1,0 +1,197 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                {#                <button type="submit" form="form-attribute-group" data-toggle="tooltip" title="{{ button_save }}"#}
+                {#                        class="btn btn-primary">#}
+                {#                    <i class="fa fa-save"></i>#}
+                {#                </button>#}
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible">
+                <i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-shopping-cart"></i>
+                            {{ order_text }}
+                        </h3>
+                    </div>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td style="width: 1%;">
+                                <button data-toggle="tooltip" title="" class="btn btn-info btn-xs"
+                                        data-original-title="商店">
+                                    <i class="fa fa-shopping-cart fa-fw"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <a href="http://www.oc.top/" target="_blank">OpenCart 开源免费PHP商城</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button data-toggle="tooltip" title="" class="btn btn-info btn-xs"
+                                        data-original-title="生成日期：">
+                                    <i class="fa fa-calendar fa-fw"></i>
+                                </button>
+                            </td>
+                            <td>{{ order_info.createTime }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button data-toggle="tooltip" title="" class="btn btn-info btn-xs"
+                                        data-original-title="支付方式：">
+                                    <i class="fa fa-credit-card fa-fw"></i>
+                                </button>
+                            </td>
+                            <td>
+                                {% if order_info.paymentCode == 'online' %}
+                                    {{ online_text }}
+                                {% else %}
+                                    {{ offline_text }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-user"></i>
+                            {{ customer_text }}
+                        </h3>
+                    </div>
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td style="width: 1%;">
+                                <button data-toggle="tooltip" title="" class="btn btn-info btn-xs"
+                                        data-original-title="客户名称：">
+                                    <i class="fa fa-user fa-fw"></i>
+                                </button>
+                            </td>
+                            <td>{{ order_info.buyerName }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button data-toggle="tooltip" title="" class="btn btn-info btn-xs"
+                                        data-original-title="地址："><i class="fa fa-envelope-o fa-fw"></i></button>
+                            </td>
+                            <td>{{ order_info.reciverInfo.area_info }}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button data-toggle="tooltip" title="" class="btn btn-info btn-xs"
+                                        data-original-title="联系电话："><i class="fa fa-phone fa-fw"></i></button>
+                            </td>
+                            <td>{{ order_info.reciverInfo.tel_phone }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-info-circle"></i> {{ order_text }}</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td style="width: 50%;" class="text-left">{{ shipping_address_text }}</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td class="text-left">
+                            {{ order_info.reciverInfo.true_name }}
+                            <br>{{ order_info.reciverInfo.area_info }}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td class="text-center">{{ column_goods_name }}</td>
+                        <td class="text-center">{{ column_goods_image }}</td>
+                        <td class="text-center">{{ column_goods_price }}</td>
+                        <td class="text-center">{{ column_goods_sku }}</td>
+                        <td class="text-center">{{ column_goods_number }}</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if order_info.orderGoods %}
+                        {% for orderGoods in order_info.orderGoods %}
+                            <tr>
+                                <td class="text-right">
+                                    {{ orderGoods.goodsName }}
+                                </td>
+                                <td class="text-center">
+                                    {% if  orderGoods.goodsImage %}
+                                        <img src="  {{ orderGoods.goodsImage }}"
+                                             alt="{{ orderGoods.goodsName }}"
+                                             class="img-thumbnail"/>
+                                    {% else %}
+                                        <span class="img-thumbnail list">
+                                            <i class="fa fa-camera fa-2x"></i>
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    ￥{{ orderGoods.goodsPrice }}
+                                </td>
+                                <td class="text-center">
+                                    {{ orderGoods.goodsSku }}
+                                </td>
+                                <td class="text-right">
+                                    {{ orderGoods.goodsNum }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>{{ orderMessage_text }}</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ order_info.orderMessage ? order_info.orderMessage: '无' }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{ footer }}

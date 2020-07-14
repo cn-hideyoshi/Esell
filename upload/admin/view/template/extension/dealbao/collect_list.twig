@@ -1,0 +1,246 @@
+{{ header }}
+
+<style>
+    .ztree {
+        border: 1px solid #ddd;
+        min-height: 550px;
+    }
+
+    .tWidth {
+        width: 15%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+</style>
+{{ column_left }}
+
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button id="category_bind" data-toggle="tooltip" title="{{ category_bind_text }}"
+                        class="btn btn-primary">
+                    {{ category_bind_text }}
+                </button>
+                <button id="download" data-toggle="tooltip" title="{{ button_download }}"
+                        class="btn btn-primary">
+                    <i class="fa fa-download"></i>
+                </button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible">
+                <i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div id="filter-product" class="col-sm-12 hidden-sm hidden-xs">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-filter"></i> {{ text_filter }}</h3>
+                    </div>
+                    <div class="panel-body filter_content">
+                        <div class="row">
+
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="" class="control-label">
+                                        {{ entry_max_price }}
+                                    </label>
+                                    <input type="text" name="filter_max_price" value="{{ filter_max_price }}"
+                                           placeholder="{{ entry_max_price }}" id="input-name" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="" class="control-label">
+                                        {{ entry_min_price }}
+                                    </label>
+                                    <input type="text" name="filter_min_price" value="{{ filter_min_price }}"
+                                           placeholder="{{ entry_min_price }}" id="input-name" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="" class="control-label">
+                                    &nbsp;
+                                </label>
+                                <div class="form-group text-left">
+                                    <button type="button" id="button-filter" class="btn btn-default">
+                                        <i class="fa fa-filter"></i> {{ button_filter }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-product">
+                            <div class="col-sm-2">
+                                <div id="cateTree" class="ztree"></div>
+                            </div>
+                            <div class="col-sm-10">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <td style="width: 1px;" class="text-center">
+                                                <input type="checkbox"
+                                                       onclick="$('input[name*=\'selected\']').trigger('click');"/>
+                                            </td>
+                                            <td class="text-center" style="width: 20px;">
+                                                {% if sort == 'spu' %}
+                                                    <a href="{{ now_url }}&sort=spu&sort_order=desc&group_id={{ group_id }}&level={{ level }}">
+                                                        {{ column_id }}
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{{ now_url }}&sort=spu&group_id={{ group_id }}&level={{ level }}">{{ column_id }}</a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center" style="width: 150px">{{ column_image }}</td>
+                                            <td class="text-left" style="width: 500px">
+                                                {{ column_name }}
+                                            </td>
+                                            <td class="text-center">
+                                                {{ column_quantity }}
+                                            </td>
+                                            <td class="text-right">
+                                                {% if sort == 'goods_price' %}
+                                                    <a href="{{ now_url }}&sort=goods_price&sort_order=desc&group_id={{ group_id }}&level={{ level }}"
+                                                       class="{{ order|lower }}">
+                                                        {{ column_price }}
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{{ now_url }}&sort=goods_price&group_id={{ group_id }}&level={{ level }}">
+                                                        {{ column_price }}
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-right">{{ column_action }}</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if goods_list.data %}
+                                            {% for product in goods_list.data %}
+                                                <tr>
+                                                    <td class="text-center">
+                                                        {% if product.spu in selected %}
+                                                            <input type="checkbox" name="selected[]"
+                                                                   value="{{ product.spu }}"
+                                                                   checked="checked"/>
+                                                        {% else %}
+                                                            <input type="checkbox" name="selected[]"
+                                                                   value="{{ product.spu }}"/>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span>{{ product.spu }}</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        {% if  product.goods_image %}
+                                                            <img src="{{ product.goods_image }}"
+                                                                 alt="{{ product.goods_name }}"
+                                                                 class="img-thumbnail" width="100"/>
+                                                        {% else %}
+                                                            <span class="img-thumbnail list">
+                                                            <i class="fa fa-camera fa-2x"></i>
+                                                        </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-left" title="{{ product.goods_name }}">
+                                                        <span style=" display:block; width: 500px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                                            {{ product.goods_name }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span class="label label-success">{{ product.goods_storage }}</span>
+                                                    </td>
+                                                    <td class="text-right">{{ product.goods_price }}</td>
+                                                    <td class="text-right">
+                                                        <a href="{{ edit_link }}&spu={{ product.spu }}"
+                                                           data-toggle="tooltip" title="" class="btn btn-primary"
+                                                           data-original-title="{{ button_edit }}">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </a>
+                                                        <div data-spu="{{ product.spu }}"
+                                                             data-toggle="tooltip" title=""
+                                                             class="btn btn-danger delete-collect"
+                                                             data-original-title="{{ button_delete }}">
+                                                            <i class="fa fa-trash"></i>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td class="text-center" colspan="9">{{ text_no_results }}</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6 text-left">{{ pagination }}</div>
+                                    <div class="col-sm-2"></div>
+                                    <div class="col-sm-4 text-left page_results"
+                                         style="line-height: 36px;">{{ results }}</div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //data
+    let data_dealbao = '{{ data_dealbao }}';
+    let categoryBind = '{{ category_bind }}';
+    let goods_download = '{{ goods_download }}';
+    let collect_delete = '{{ collect_delete }}';
+    let user_token = '{{ user_token }}';
+    let sort = '{{ sort }}';
+    let page = '{{ page }}';
+    let treeData = {{ cate_list }};
+    let group_id = '{{ group_id }}';
+    let limit = '{{ pageSize }}';
+    let cate_id = '{{ group_id }}';
+    let level = '{{ level }}';
+    let sort_order = '{{ sort_order }}';
+    let filter_keyword = '{{ filter_keyword }}';
+    let filter_max_price = '{{ filter_max_price }}';
+    let filter_min_price = '{{ filter_min_price }}';
+    let base_url = data_dealbao +
+        '&user_token=' + user_token +
+        '&sort_order=' + sort_order +
+        '&sort=' + sort +
+        '&filter_keyword=' + filter_keyword +
+        '&filter_max_price=' + filter_max_price +
+        '&filter_min_price=' + filter_min_price;
+</script>
+
+{{ footer }}

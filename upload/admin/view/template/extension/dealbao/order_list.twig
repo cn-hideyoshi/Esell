@@ -1,0 +1,208 @@
+{{ header }}{{ column_left }}
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible">
+                <i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div id="filter-product" class="col-sm-12 hidden-sm hidden-xs">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-filter"></i>{{ text_filter }}</h3>
+                    </div>
+                    <div class="panel-body filter_content">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        {{ entry_orderSn }}
+                                    </label>
+                                    <input type="text" name="filter_orderSn" value="{{ filter_orderSn }}"
+                                           placeholder="{{ entry_orderSn }}" id="input-name" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        {{ entry_goodsName }}
+                                    </label>
+                                    <input type="text" name="filter_goodsName" value="{{ filter_goodsName }}"
+                                           placeholder="{{ entry_goodsName }}" id="input-name" class="form-control"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        {{ start_time_text }}
+                                    </label>
+                                    <div class="input-group ">
+                                        <div class="input-group date">
+                                            <input type="text" name="filter_startTime" value="{{ filter_startTime }}"
+                                                   placeholder="XXXX-XX-XX" data-date-format="YYYY-MM-DD"
+                                                   class="form-control">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-default date_picker" type="button">
+                                                    <i class="fa fa-calendar"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="input-group-addon" style="border: none;background: none;">-</div>
+                                        <div class="input-group date">
+                                            <input type="text" name="filter_endTime" value="{{ filter_endTime }}"
+                                                   placeholder="XXXX-XX-XX" data-date-format="YYYY-MM-DD"
+                                                   class="form-control">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-default date_picker" type="button"><i
+                                                            class="fa fa-calendar"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <label class="control-label">&nbsp;</label>
+                                <div class="form-group text-left">
+                                    <button type="button" id="button-filter" class="btn btn-default">
+                                        <i class="fa fa-filter"></i> {{ button_filter }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-product">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                    <tr>
+                                        <td style="width: 1px;" class="text-center">
+                                            <input type="checkbox"
+                                                   onclick="$('input[name*=\'selected\']').trigger('click');"/>
+                                        </td>
+                                        <td class="text-center">{{ column_orderSn }}</td>
+                                        <td class="text-center">{{ column_buyerName }}</td>
+                                        <td class="text-left">{{ column_orderState }}</td>
+                                        <td class="text-right">{{ column_createTime }}</td>
+                                        <td class="text-right">{{ column_updateTime }}</td>
+                                        <td class="text-right">{{ column_action }}</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if order_list %}
+                                        {% for order in order_list.data %}
+                                            <tr>
+                                                <td class="text-center">
+                                                    <input type="checkbox" name="selected[]"
+                                                           value="{{ order.order_sn }}"
+                                                            {% if order.order_sn in selected %}
+                                                        checked="checked"
+                                                            {% endif %}/>
+                                                </td>
+                                                <td class="text-center">{{ order.order_sn }}</td>
+                                                <td class="text-center">{{ order.buyer_name }}</td>
+                                                <td class="text-left">{{ order.order_state }}</td>
+                                                <td class="text-right">{{ order.create_time }}</td>
+                                                <td class="text-right">{{ order.update_time }}</td>
+                                                <td class="text-right">
+                                                    <a href="{{ edit_link }}&orderSn={{ order.order_sn }}"
+                                                       data-toggle="tooltip" title="" class="btn btn-primary"
+                                                       data-original-title="编辑"><i class="fa fa-pencil"></i></a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td class="text-center" colspan="9">{{ text_no_results }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                        <div class="row">
+                            <div class="col-sm-6 text-left">{{ pagination }}</div>
+                            <div class="col-sm-3"></div>
+                            <div class="col-sm-3 text-left page_results" style="line-height: 36px;">{{ results }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    let data_dealbao = '{{ data_dealbao }}';
+    let user_token = '{{ user_token }}';
+    let sort = '{{ sort }}';
+    let page = '{{ page }}';
+    let limit = '{{ limit }}';
+    let sort_order = '{{ sort_order }}';
+    let filter_keyword = '{{ filter_keyword }}';
+    let filter_max_price = '{{ filter_max_price }}';
+    let filter_min_price = '{{ filter_min_price }}';
+
+    $('.date').datetimepicker({
+        language: 'en-gb',
+        pickTime: false
+    });
+    $('#button-filter').on('click', function () {
+        let url = '';
+
+        {% if sort %}url += '&sort={{ sort }}';{% endif %}
+
+        $.each($('.filter_content input'), function () {
+            let filter = $(this).val();
+            let filter_name = $(this).attr('name');
+            if (filter) url += '&' + filter_name + '=' + encodeURIComponent(filter);
+        })
+
+        $.each($('.filter_content select'), function () {
+            let filter = $(this).val();
+            let filter_name = $(this).attr('name');
+            if (filter) url += '&' + filter_name + '=' + encodeURIComponent(filter);
+        })
+
+        location = '{{ data_dealbao }}&user_token={{ user_token }}' + url;
+    });
+
+    $('.page_results select').on('change', function () {
+        let value = $(this).children('option:selected').val();
+        location = data_dealbao + '&user_token=' + user_token + '&page=1&sort=' + sort + '&sort_order=' + sort_order + '&filter_keyword=' + filter_keyword + '&filter_max_price=' + filter_max_price + '&filter_min_price=' + filter_min_price + '&limit=' + value;
+    })
+    $('.page_results input').on('change', function () {
+        let value = $(this).children('option:selected').val();
+        location = data_dealbao + '&user_token=' + user_token + '&page=1&sort=' + sort + '&sort_order=' + sort_order + '&filter_keyword=' + filter_keyword + '&filter_max_price=' + filter_max_price + '&filter_min_price=' + filter_min_price + '&limit=' + value;
+    })
+</script>
+{{ footer }}

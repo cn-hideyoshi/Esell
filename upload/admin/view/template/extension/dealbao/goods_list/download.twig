@@ -1,0 +1,258 @@
+{{ header }}
+
+{{ column_left }}
+
+<div id="content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible">
+                <i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-sm-12" style="padding-bottom: 15px;">
+                            <label class="col-md-1 control-label">
+                                <div id="start" data-toggle="tooltip" title="{{ start_download }}"
+                                     class="btn btn-primary">
+                                    <i class="fa fa-download"></i>
+                                </div>
+                            </label>
+                            <div class="col-sm-11">
+                                <div class="progress">
+                                    <div id="progress-bar" class="progress-bar" style="width: 0;"></div>
+                                </div>
+                                <div id="progress-text"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="col-md-1 control-label"
+                                       for="input-category">
+                                    <span data-toggle="tooltip" title=""
+                                          data-original-title="自动完成">商品分类
+                                    </span>
+                                </label>
+                                <div class="col-md-11">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                        </div>
+                                        <input type="text" name="category" value="" placeholder="商品分类"
+                                               id="input-category" class="form-control" autocomplete="off">
+                                    </div>
+                                    <div id="product-category" class="well well-sm"
+                                         style="min-height: 150px; overflow: auto;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover" id="table">
+                                    <thead>
+                                    <tr>
+                                        <td class="text-center">
+                                            {% if sort == 'spu' %}
+                                                <a href="{{ now_url }}&sort=spu&categoryId1={{ categoryId1 }}&categoryId2={{ categoryId2 }}&categoryId3={{ categoryId3 }}">
+                                                    {{ column_id }}
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ now_url }}&sort=spu&categoryId1={{ categoryId1 }}&categoryId2={{ categoryId2 }}&categoryId3={{ categoryId3 }}">{{ column_id }}</a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">{{ column_image }}</td>
+                                        <td class="text-left" width="100">
+                                            {% if sort == 'goodsName' %}
+                                                <a href="{{ now_url }}&sort=goodsName&categoryId1={{ categoryId1 }}&categoryId2={{ categoryId2 }}&categoryId3={{ categoryId3 }}"
+                                                   class="{{ order|lower }}">{{ column_name }}</a>
+                                            {% else %}
+                                                <a href="{{ now_url }}&sort=goodsName&categoryId1={{ categoryId1 }}&categoryId2={{ categoryId2 }}&categoryId3={{ categoryId3 }}">
+                                                    {{ column_name }}
+                                                </a>
+                                            {% endif %}
+                                        </td>
+
+                                        <td class="text-right">
+                                            {% if sort == 'goodsMarketPrice' %}
+                                                <a href="{{ now_url }}&sort=goodsMarketPrice&categoryId1={{ categoryId1 }}&categoryId2={{ categoryId2 }}&categoryId3={{ categoryId3 }}"
+                                                   class="{{ order|lower }}">
+                                                    {{ column_price }}
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ now_url }}&sort=goodsMarketPrice&categoryId1={{ categoryId1 }}&categoryId2={{ categoryId2 }}&categoryId3={{ categoryId3 }}">
+                                                    {{ column_price }}
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {{ column_state }}
+                                        </td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if goods_list %}
+                                        {% for product in goods_list %}
+                                            <tr>
+                                                <td class="text-center">
+                                                    <span>{{ product.spu }}</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    {% if  product.goods_image %}
+                                                        <img src="{{ product.goods_image }}"
+                                                             alt="{{ product.goods_name }}"
+                                                             class="img-thumbnail" width="100"/>
+                                                    {% else %}
+                                                        <span class="img-thumbnail list">
+                                                            <i class="fa fa-camera fa-2x"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-left">{{ product.goods_name }}</td>
+                                                <td class="text-right">{{ product.goods_price }}</td>
+                                                <td class="text-center status">
+                                                    <i class="fa fa-ellipsis-h text-warning"></i>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td class="text-center" colspan="5">{{ text_no_results }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="view/javascript/dealbao/list_common.js?1" type="text/javascript"></script>
+<script src="view/javascript/dealbao/layer/layer.js?2" type="text/javascript"></script>
+<script>
+    // 分类
+    $('input[name=\'category\']').autocomplete({
+        'source': function (request, response) {
+            $.ajax({
+                url: 'index.php?route=catalog/category/autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+                dataType: 'json',
+                success: function (json) {
+                    response($.map(json, function (item) {
+                        return {
+                            label: item['name'],
+                            value: item['category_id']
+                        }
+                    }));
+                }
+            });
+        },
+        'select': function (item) {
+            $('input[name=\'category\']').val('');
+
+            $('#product-category' + item['value']).remove();
+
+            $('#product-category').append('<div id="product-category' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product_category[]" value="' + item['value'] + '" /></div>');
+        }
+    });
+
+    $('#product-category').delegate('.fa-minus-circle', 'click', function () {
+        $(this).parent().remove();
+    });
+
+
+    let now = -1;
+
+    let cateList;
+    let submitLimit = 0;
+    $("#start").on('click', function () {
+        if (submitLimit > 0) return false;
+        submitLimit++;
+        cateList = [];
+        $.each($('input[name="product_category[]"]'), function () {
+            cateList.push($(this).val());
+        })
+        if (cateList.length === 0) {
+            layer.msg("{{ entry_cate }}");
+            submitLimit--;
+            return false;
+        }
+        next(cateList);
+    })
+
+    function next() {
+        now++;
+        let tbody = $("#table tbody");
+        let bar = $('#progress-bar');
+        let text = $("#progress-text");
+        let load_text = (now + 1) + "/" + goods_list.length;
+        bar.removeClass('progress-bar-danger');
+        bar.css('width', ((now + 1) / goods_list.length) * 100 + "%");
+        text.text(load_text);
+        let goods_info = goods_list[now];
+        $.ajax({
+            url: 'index.php?route=extension/dealbao/goods_list/download&user_token={{ user_token }}',
+            data: {goods_info: JSON.stringify(goods_info), cate_list: cateList},
+            type: 'post',
+            dataType: 'json',
+            success: data => {
+                if (data.code != 200) {
+                    submitLimit--;
+                    now--;
+                    tbody.find('.status:eq(' + now + ')').html('<i class="fa fa-times-circle-o text-danger"></i>');
+                    bar.addClass('progress-bar-danger');
+                    $('#progress-text').html('<div class="text-danger">' + data.message + '</div>');
+                    return;
+                }
+
+                if (now + 1 < goods_list.length) {
+                    tbody.find('.status:eq(' + now + ')').html('<i class="fa fa-check-circle-o text-success"></i>');
+                    setTimeout(next, 1000);
+                    return;
+                }
+                submitLimit--;
+                bar.css('width', '100%');
+                tbody.find('.status:eq(' + now + ')').html('<i class="fa fa-check-circle-o text-success"></i>');
+                bar.removeClass('progress-bar-danger');
+                bar.addClass('progress-bar-success');
+                text.html('<span class="text-success">{{ success_text }}</div>');
+            },
+            error: () => {
+                submitLimit--;
+                now--;
+                $('#progress-bar').addClass('progress-bar-danger');
+                $('#progress-text').html('<div class="text-danger">{{ download_error }}</div>');
+            }
+        });
+    }
+
+    let goods_list = {{ goods_list_json }};
+</script>
+{{ footer }}
