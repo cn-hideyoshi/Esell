@@ -9,10 +9,10 @@
     <file path="admin/controller/common/column_left.php">
         <operation>
             <search>
-                <![CDATA[if ($this->user->hasPermission('access', 'extension/extension/dealbao')) {]]>
+                <![CDATA[if ($this->user->hasPermission('access', 'marketplace/extension')) {]]>
             </search>
             <add position="before">
-                <![CDATA[  if ($this->user->hasPermission('access', 'marketplace/extension')) {
+                <![CDATA[  if ($this->user->hasPermission('access', 'extension/extension/dealbao')) {
                 $this->load->language('extension/dealbao/oc_common/column_left');
                 $e_sell = [];
                 $types = glob(DIR_APPLICATION . 'controller/extension/dealbao/*.php', GLOB_BRACE);
@@ -39,7 +39,7 @@
     <file path="admin/controller/startup/permission.php">
         <operation>
             <search>
-                <![CDATA['extension/openbay',]]>
+                <![CDATA['extension/openbay']]>
             </search>
             <add position="before">
                 <![CDATA['extension/dealbao',]]>
