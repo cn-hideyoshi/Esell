@@ -1,4 +1,4 @@
-## dealbao-plugin-for-opencart
+## Esell-plugin-for-opencart
 english document | [中文说明](README_CN.md)
 ## 1.Download:
 github url：https://github.com/cn-hideyoshi/dealbao-plugin-for-opencart
