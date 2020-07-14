@@ -12,7 +12,7 @@
                 <![CDATA[if ($this->user->hasPermission('access', 'marketplace/extension')) {]]>
             </search>
             <add position="before">
-                <![CDATA[  if ($this->user->hasPermission('access', 'extension/extension/dealbao')) {
+                <![CDATA[ if ($this->user->hasPermission('access', 'extension/extension/dealbao') && file_exists(DIR_APPLICATION . 'controller/extension/extension/dealbao.php')) {
                 $this->load->language('extension/dealbao/oc_common/column_left');
                 $e_sell = [];
                 $types = glob(DIR_APPLICATION . 'controller/extension/dealbao/*.php', GLOB_BRACE);
