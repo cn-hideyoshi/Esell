@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <code>e_sell</code>
+    <name>e_sell</name>
+    <version>1.0</version>
+    <author>cn-hideyoshi</author>
+    <link>http://www.tserv.dealbao.cn</link>
+    <!--change admin menu-->
+    <file path="admin/controller/common/column_left.php">
+        <operation>
+            <search>
+                <![CDATA[if ($this->user->hasPermission('access', 'marketplace/modification')) {]]>
+            </search>
+            <add position="before">
+                <![CDATA[  if ($this->user->hasPermission('access', 'marketplace/extension')) {
+                $this->load->language('extension/dealbao/column_left');
+                $e_sell = [];
+                $types = glob(DIR_APPLICATION . 'controller/extension/dealbao/*.php', GLOB_BRACE);
+                foreach ($types as $type) {
+                    $type = basename($type, '.php');
+                    if (!$this->user->hasPermission('access', 'extension/dealbao/' . $type)) continue;
+                    $e_sell[] = array(
+                        'name'     => $this->language->get("text_e_sell_{$type}"),
+                        'href'     => $this->url->link('extension/dealbao/' . $type, 'user_token=' . $this->session->data['user_token'] . '&type=' . $type),
+                        'children' => array()
+                    );
+                }
+                $data['menus'][] = array(
+                    'id'       => 'menu-extension-e-sell',
+                    'icon'     => 'fa-puzzle-piece',
+                    'name'     => $this->language->get('text_e_sell'),
+                    'href'     => '',
+                    'children' => $e_sell
+                );
+            } ]]>
+            </add>
+        </operation>
+    </file>
+    <!-- add admin menu language-->
+    <file path="admin/language/*/common/column_left.php">
+        <operation>
+            <search>
+                <![CDATA['Other Statuses';]]>
+            </search>
+            <add position="before">
+                <![CDATA[  if ($this->user->hasPermission('access', 'marketplace/extension')) {
+                $e_sell = [];
+                $types = glob(DIR_APPLICATION . 'controller/extension/dealbao/*.php', GLOB_BRACE);
+                foreach ($types as $type) {
+                    $type = basename($type, '.php');
+                    $e_sell[] = array(
+                        'name'     => $this->language->get("text_e_sell_{$type}"),
+                        'href'     => $this->url->link('extension/dealbao/'.$type, 'user_token=' . $this->session->data['user_token'] . '&type=' . $type),
+                        'children' => array()
+                    );
+                }
+                $data['menus'][] = array(
+                    'id'       => 'menu-extension-e-sell',
+                    'icon'     => 'fa-puzzle-piece',
+                    'name'     => $this->language->get('text_e_sell'),
+                    'href'     => '',
+                    'children' => $e_sell
+                );
+            } ]]>
+            </add>
+        </operation>
+    </file>
+</modification>
