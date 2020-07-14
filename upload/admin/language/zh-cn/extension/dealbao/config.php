@@ -1,4 +1,5 @@
 <?php
+$_['text_extension'] = '供应链';
 $_['heading_title'] = '供应链配置';
 
 $_['text_edit']     = '编辑供应链配置';
