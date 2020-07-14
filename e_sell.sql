@@ -220,6 +220,9 @@ CREATE TABLE `dealbao_category_mapping`
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+-- ----------------------------
+-- alert table open cart product
+-- ----------------------------
 ALTER TABLE `oc_product`
     ADD COLUMN `dealbao_status` enum ('0','1') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0',
     ADD COLUMN `dealbao_spu`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci    NOT NULL DEFAULT '',
