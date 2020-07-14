@@ -29,7 +29,7 @@ CREATE TABLE `dealbao_order_related`
     `order_sn` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 2
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8
   COLLATE = utf8_general_ci
   ROW_FORMAT = Dynamic;
@@ -46,7 +46,7 @@ CREATE TABLE `dealbao_download_images`
     `download_id` int(11)                                                 NULL DEFAULT NULL,
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 308
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8
   COLLATE = utf8_general_ci
   ROW_FORMAT = Dynamic;
@@ -64,7 +64,7 @@ CREATE TABLE `dealbao_download_group`
     `status`      int(3)                                          NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 5
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8
   COLLATE = utf8_general_ci
   ROW_FORMAT = Dynamic;
@@ -134,7 +134,7 @@ CREATE TABLE `dealbao_download_goods`
     `download_status`       int(3)                                                  NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 15
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8
   COLLATE = utf8_general_ci
   ROW_FORMAT = Dynamic;
@@ -152,7 +152,7 @@ CREATE TABLE `dealbao_download_history`
     `status`        int(3)                                                 NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 3
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8
   COLLATE = utf8_general_ci
   ROW_FORMAT = Dynamic;
@@ -175,10 +175,32 @@ CREATE TABLE `dealbao_language`
     PRIMARY KEY (`language_id`) USING BTREE,
     INDEX `name` (`name`) USING BTREE
 ) ENGINE = MyISAM
-  AUTO_INCREMENT = 9
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8
   COLLATE = utf8_general_ci
   ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of dealbao_language
+-- ----------------------------
+INSERT INTO `dealbao_language`
+VALUES (1, 'English', 'USA', 'en', 'en', '', '/upload/picture/store/20200109/2138b55ac3e5a95aeac6d34e1e04dc68.gif', 2,
+        1);
+INSERT INTO `dealbao_language`
+VALUES (2, '简体中文', 'CHN', 'zh', 'zh', '￥', '/upload/picture/store/20200109/b0cdd7e4ddbd1288765978763941c911.gif', 1, 1);
+INSERT INTO `dealbao_language`
+VALUES (3, '日语', 'JPN', 'ja', 'jp', '', '/upload/picture/store/20200109/5bd5870ee855e90f017690c840c72a63.gif', 3, 1);
+INSERT INTO `dealbao_language`
+VALUES (4, '西班牙语', 'ESP', 'es', 'spa', '', '/upload/picture/store/20200109/a76cac3d91a5bc5a7804efe61ca11729.gif', 31,
+        1);
+INSERT INTO `dealbao_language`
+VALUES (5, '法语', 'FRA', 'fr', 'fra', '', '/upload/picture/store/20200109/5001b46fad6f354b081a544945b83867.gif', 10, 1);
+INSERT INTO `dealbao_language`
+VALUES (6, '德语', 'DEU', 'de', 'de', '', '/upload/picture/store/20200109/530e2e3a3b99ae09cf9a453dcbb01164.gif', 3, 1);
+INSERT INTO `dealbao_language`
+VALUES (7, '俄语', 'RUS', 'ru', 'ru', '', '/upload/picture/store/20200109/a0fba0739b2c4805b58156d808640760.gif', 1, 1);
+INSERT INTO `dealbao_language`
+VALUES (8, '葡萄牙语', 'PRT', 'pt', 'pt', '', '/upload/picture/store/20200109/66413e62519145e0fd3a13b97f25b2e8.gif', 1, 1);
 
 -- ----------------------------
 -- Table structure for dealbao_download_prosess
@@ -218,8 +240,6 @@ CREATE TABLE `dealbao_category_mapping`
   COLLATE = utf8_general_ci
   ROW_FORMAT = Dynamic;
 
-SET FOREIGN_KEY_CHECKS = 1;
-
 -- ----------------------------
 -- alert table open cart product
 -- ----------------------------
@@ -227,3 +247,7 @@ ALTER TABLE `oc_product`
     ADD COLUMN `dealbao_status` enum ('0','1') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0',
     ADD COLUMN `dealbao_spu`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci    NOT NULL DEFAULT '',
     ADD COLUMN `dealbao_sku`    varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci    NOT NULL DEFAULT '';
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
