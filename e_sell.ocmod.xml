@@ -36,6 +36,7 @@
             </add>
         </operation>
     </file>
+    <!-- e sell permission-->
     <file path="admin/controller/startup/permission.php">
         <operation>
             <search>
@@ -46,4 +47,241 @@
             </add>
         </operation>
     </file>
+
+    <!--cart log-->
+    <!--  checkout/checkout-->
+    <file path="catalog/controller/checkout/checkout.php">
+        <operation>
+            <search>
+                <![CDATA[public function index() {]]>
+            </search>
+            <add position="before">
+                <![CDATA[  /**
+     * check ESell Product
+     * @param $products
+     */
+    private function checkESellProduct($products)
+    {
+        $dealbao_mark = [];
+        $this->getClient();
+        foreach ($products as $product) {
+            if ($product['dealbao_status'] != 1) continue;
+            $dealbao_mark[] = $product['dealbao_mark'];
+        }
+        $change = $this->batchGetProductStock($dealbao_mark);
+        $this->batchChangeDealbaoProduct($change);
+    }
+
+    /**
+     *  get Client
+     * @return array
+     */
+    private function getClient()
+    {
+        $this->load->model('extension/e_sell/token');
+        $this->load->model('extension/e_sell/sdk_client');
+        $data = [];
+        $res = $this->model_extension_e_sell_token->getAccessToken();
+        if ($res == false) $data['error_warning'] = $this->language->get('error_app_info');
+        $this->model_extension_e_sell_sdk_client->getClient();
+        return $data;
+    }
+
+    /**
+     * batch Get Product Stock
+     * @param $marks
+     * @return bool|array
+     */
+    private function batchGetProductStock($marks)
+    {
+        $spu = [];
+        $sku = [];
+        foreach ($marks as $mark) list($spu[], $sku[]) = explode('_', $mark);
+        $param = ['skus' => implode(',', array_unique($sku))];
+        $result = $this->model_extension_e_sell_sdk_client->getSdkCallback('Goods/batchGetGoodsSKuStock', $param);
+        if (empty($result) && $result['code'] != 200) return false;
+        return $result['data'];
+    }
+
+    /**
+     * get Stock
+     * @param $product
+     * @return mixed
+     */
+    private function getStock($product)
+    {
+        list($spu, $sku) = explode('_', $product['dealbao_mark']);
+        $param = ['sku' => $sku];
+        $result = $this->model_extension_e_sell_sdk_client->getSdkCallback('Goods/getGoodsSkuStock', $param);
+        return $result['code'] == 200 ? $result['data'] : $result;
+    }
+
+    /**
+     * batch Change Product
+     * @param $change
+     */
+    private function batchChangeDealbaoProduct($change)
+    {
+        $this->load->model('extension/e_sell/goods');
+        $this->model_extension_e_sell_goods->batchChangeStock($change);
+    }]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[public function index() {]]></search>
+            <add position="after">
+                <![CDATA[
+                //changed
+                $this->checkESellProduct($this->cart->getProducts());]]>
+            </add>
+        </operation>
+    </file>
+    <!--  checkout/confirm-->
+    <file path="catalog/controller/checkout/confirm.php">
+        <operation>
+            <search><![CDATA[ // Validate cart has products and has stock.]]></search>
+            <add position="before">
+                <![CDATA[
+                //changed
+                $this->checkESellProduct($this->cart->getProducts());
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search><![CDATA[$this->load->model('checkout/order');]]></search>
+            <add position="before">
+                <![CDATA[
+                //changed
+                $eResult = $this->saveESellOrder($order_data);
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+                <![CDATA[ $this->session->data['order_id'] = $this->model_checkout_order->addOrder($order_data);]]>
+            </search>
+            <add position="after">
+                <![CDATA[
+                //changed
+                $this->setOrderRelated(['order_id' => $this->session->data['order_id']], $eResult);
+            ]]>
+            </add>
+        </operation>
+        <operation>
+            <search>
+                <![CDATA[public function index(){]]>
+            </search>
+            <add position="before">
+                <![CDATA[
+                 /**
+     * create e sell order
+     * @param $order_data
+     * @return bool
+     */
+    private function saveESellOrder($order_data)
+    {
+        $this->getClient();
+        $items = [];
+        $lang_map = $this->config->get('dealbao_lang_map');
+        foreach ($order_data['products'] as $product) {
+            if ($product['dealbao_status'] != 1) continue;
+            list($spu, $sku) = explode('_', $product['dealbao_mark']);
+            $items[$sku . '_' . $lang_map['to']['default']] = $product['quantity'];
+        }
+
+        $param = [
+            'time_stamp'    => time(),
+            'nonce'         => date('Ymd') . str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT),
+            'items'         => json_encode($items),
+            'order_source'  => 'app',
+            'area_info'     => $order_data['payment_country'] . ' ' . $order_data['payment_zone'] . ' ' . $order_data['payment_city'] . ' ' . $order_data['payment_address_1'],
+            'address'       => $order_data['payment_address_1'],
+            'true_name'     => $order_data['payment_firstname'] . $order_data['payment_lastname'],
+            'mob_phone'     => $order_data['telephone'],
+            'order_message' => [],
+        ];
+
+        $result = $this->model_extension_e_sell_sdk_client->getSdkCallback('Order/createAppOrder', $param);
+        if (empty($result) && $result['code'] != 200) return $result;
+        return $result['data'];
+    }
+
+    /**
+     *  get Client
+     * @return array
+     */
+    private function getClient()
+    {
+        $this->load->model('extension/e_sell/token');
+        $this->load->model('extension/e_sell/sdk_client');
+        $data = [];
+        $res = $this->model_extension_e_sell_token->getAccessToken();
+        if ($res == false) $data['error_warning'] = $this->language->get('error_app_info');
+        $this->model_extension_e_sell_sdk_client->getClient();
+        return $data;
+    }
+
+    /**
+     * check ESell Product
+     * @param $products
+     */
+    private function checkESellProduct($products)
+    {
+        $dealbao_mark = [];
+        $this->getClient();
+        foreach ($products as $product) {
+            if ($product['dealbao_status'] != 1) continue;
+            $dealbao_mark[] = $product['dealbao_mark'];
+        }
+        $change = $this->batchGetProductStock($dealbao_mark);
+        $this->batchChangeDealbaoProduct($change);
+    }
+
+    /**
+     * batch Get Product Stock
+     * @param $marks
+     * @return bool|array
+     */
+    private function batchGetProductStock($marks)
+    {
+        $spu = [];
+        $sku = [];
+        foreach ($marks as $mark) list($spu[], $sku[]) = explode('_', $mark);
+        $param = ['skus' => implode(',', array_unique($sku))];
+        $result = $this->model_extension_e_sell_sdk_client->getSdkCallback('Goods/batchGetGoodsSKuStock', $param);
+        if (empty($result) && $result['code'] != 200) return false;
+        return $result['data'];
+    }
+
+    /**
+     * batch Change Product
+     * @param $change
+     */
+    private function batchChangeDealbaoProduct($change)
+    {
+        $this->load->model('extension/e_sell/goods');
+        $this->model_extension_e_sell_goods->batchChangeStock($change);
+    }
+
+    /**
+     * set order related
+     * @param $local_order
+     * @param $origin_order
+     */
+    private function setOrderRelated($local_order, $origin_order)
+    {
+        $this->load->model('extension/e_sell/order');
+
+        $this->model_extension_e_sell_order->setOrderRelated($local_order, $origin_order);
+    }
+            ]]>
+            </add>
+        </operation>
+    </file>
+    <!--  checkout/payment_method-->
+    <!--    <file path="catalog/controller/checkout/payment_method.php">-->
+    <!--    </file>-->
+    <!--  extension/payment/cod-->
+    <!--    <file path="catalog/controller/extension/payment/cod.php">-->
+    <!--    </file>-->
 </modification>
