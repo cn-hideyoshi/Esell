@@ -97,6 +97,7 @@
         $spu = [];
         $sku = [];
         foreach ($marks as $mark) list($spu[], $sku[]) = explode('_', $mark);
+        if(empty($sku)) return [];
         $param = ['skus' => implode(',', array_unique($sku))];
         $result = $this->model_extension_e_sell_sdk_client->getSdkCallback('Goods/batchGetGoodsSKuStock', $param);
         if (empty($result) && $result['code'] != 200) return false;
@@ -139,6 +140,13 @@
     <!--  checkout/confirm-->
     <file path="catalog/controller/checkout/confirm.php">
         <operation>
+            <search><![CDATA[$order_data['products'][] = array(]]></search>
+            <add position="after"><![CDATA[
+        'dealbao_status' => $product['dealbao_status'],
+                    'dealbao_mark'   => $product['dealbao_mark'],
+            ]]></add>
+        </operation>
+        <operation>
             <search><![CDATA[ // Validate cart has products and has stock.]]></search>
             <add position="before">
                 <![CDATA[
@@ -168,12 +176,13 @@
             </add>
         </operation>
         <operation>
+
             <search>
-                <![CDATA[public function index(){]]>
+                <![CDATA[public function index()]]>
             </search>
             <add position="before">
                 <![CDATA[
-                 /**
+                /**
      * create e sell order
      * @param $order_data
      * @return bool
@@ -247,6 +256,7 @@
         $spu = [];
         $sku = [];
         foreach ($marks as $mark) list($spu[], $sku[]) = explode('_', $mark);
+        if(empty($sku)) return [];
         $param = ['skus' => implode(',', array_unique($sku))];
         $result = $this->model_extension_e_sell_sdk_client->getSdkCallback('Goods/batchGetGoodsSKuStock', $param);
         if (empty($result) && $result['code'] != 200) return false;
@@ -273,15 +283,21 @@
         $this->load->model('extension/e_sell/order');
 
         $this->model_extension_e_sell_order->setOrderRelated($local_order, $origin_order);
-    }
-            ]]>
+    }]]>
             </add>
         </operation>
     </file>
-    <!--  checkout/payment_method-->
-    <!--    <file path="catalog/controller/checkout/payment_method.php">-->
-    <!--    </file>-->
-    <!--  extension/payment/cod-->
-    <!--    <file path="catalog/controller/extension/payment/cod.php">-->
-    <!--    </file>-->
+    <!--system-->
+    <!--  library/cart/cart-->
+    <file path="system/library/cart/cart.php">
+        <operation>
+            <search><![CDATA[ $product_data[] = array(]]></search>
+            <add position="after">
+                <![CDATA[
+                    'dealbao_status'  => $product_query->row['dealbao_status'],
+                    'dealbao_mark'    => $product_query->row['dealbao_spu'] . '_' . $product_query->row['dealbao_sku'],
+                ]]>
+            </add>
+        </operation>
+    </file>
 </modification>
